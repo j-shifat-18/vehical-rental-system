@@ -1,9 +1,19 @@
 import express, { Request, Response } from "express";
+import config from "./config";
+import initDB from "./config/db";
+
+
 const app = express();
-const port = 5000;
+const port = config.port;
+
+// parser
+app.use(express.json());
+
+// initialize database
+initDB();
 
 app.get('/', (req : Request, res : Response) => {
-  res.send('Hello World!')
+  res.send('Vehical rental system')
 })
 
 app.listen(port, () => {
