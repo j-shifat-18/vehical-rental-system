@@ -19,12 +19,12 @@ const signup = async (req: Request, res: Response) => {
   }
 };
 
-const sign = async (req: Request, res: Response) => {
+const signin = async (req: Request, res: Response) => {
   try {
     const result = await authServices.signin(req.body);
 
     res.status(200).json({
-      success: false,
+      success: true,
       message: "login successful",
       data: result,
     });
@@ -39,4 +39,5 @@ const sign = async (req: Request, res: Response) => {
 
 export const authConrollers = {
   signup,
+  signin
 };
