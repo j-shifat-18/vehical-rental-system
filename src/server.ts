@@ -4,6 +4,7 @@ import initDB from "./config/db";
 import { userRoutes } from "./modules/user/user.routes";
 import { authRoutes } from "./modules/auth/auth.routes";
 import { vehicleRoutes } from "./modules/vehicle/vehicle.routes";
+import { bookingRoutes } from "./modules/booking/booking .routes";
 
 
 const app = express();
@@ -26,6 +27,10 @@ app.use("/api/v1/users",userRoutes)
 
 // vehicle crud
 app.use("/api/v1/vehicles" ,vehicleRoutes)
+
+
+// booking crud
+app.use("/api/v1/bookings" , bookingRoutes);
 
 app.get('/', (req : Request, res : Response) => {
   res.send('Vehical rental system')
