@@ -5,7 +5,20 @@ import config from "../config";
 const auth = (...roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers.authorization;
+      const header = req.headers.authorization;
+
+     
+
+      if (!header) {
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+
+      const bearer = header.split(" ")[0] as string;
+      
+      if(!bearer || bearer !== "Bearer"){
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+      const token = header.split(" ")[1] as string;
 
       if (!token) {
         return res.status(401).json({ message: "Unauthorized access" });
