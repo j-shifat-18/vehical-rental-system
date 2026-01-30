@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { userServices } from "./user.service";
+import { vehicleServices } from "./vehicle.service";
 
-const getAllUsers = async (req: Request, res: Response) => {
+const getAllVehicles = async (req: Request, res: Response) => {
   try {
-    const result = await userServices.getAllUsers(req.body);
+    const result = await vehicleServices.getAllVehiles();
 
     res.status(200).json({
       success: true,
@@ -19,6 +19,6 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const userControllers = {
-    getAllUsers,
+export const vehicleControllers = {
+  getAllVehicles,
 };
