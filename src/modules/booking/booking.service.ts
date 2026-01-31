@@ -39,7 +39,7 @@ const createBooking = async (payload: Record<string, unknown>) => {
 };
 
 const getBookings = async (user: JwtPayload) => {
-  const { role , email} = user;
+  const { role, email } = user;
 
   if (role === "admin") {
     const result = await pool.query(`SELECT * FROM BOOKINGS`);
@@ -47,17 +47,44 @@ const getBookings = async (user: JwtPayload) => {
     return result.rows;
   }
 
-  if(role === "customer"){
-
-    const result = await pool.query(`SELECT * FROM BOOKINGS b JOIN USERS u ON b.customer_id = u.id WHERE u.email = $1` , [email]);
+  if (role === "customer") {
+    const result = await pool.query(
+      `SELECT * FROM BOOKINGS b JOIN USERS u ON b.customer_id = u.id WHERE u.email = $1`,
+      [email],
+    );
 
     return result.rows;
   }
-
-
 };
 
+const updateBooking = async (
+  user: JwtPayload,
+  bookingId: string,
+  payload: Record<string, unknown>,
+) => {
+  const { status } = payload;
+
+  if (user.role === "admin") {
+    if (status === "cancelled" || status === "returned") {
+      const result  = await pool.query(`UPDATE BOOKINGS SET status = $1 WHERE ID = $2 RETURNING *` , [status ,bookingId ]) ;
+
+        return result.rows[0];
+    }
+  }
+
+  if (user.role === "customer") {
+    if (status === "cancelled") {
+      const result  = await pool.query(`UPDATE BOOKINGS SET status = $1 WHERE ID = $2 RETURNING *` , [status ,bookingId ]) ;
+
+        return result.rows[0];
+    }
+  }
+
+
+  
+};
 export const bookingServices = {
   createBooking,
-  getBookings,  
+  getBookings,
+  updateBooking
 };

@@ -48,6 +48,38 @@ const getBookings = async (req: Request, res: Response) => {
   }
 };
 
+const updateBooking = async( req: Request, res: Response)=>{
+      try {
+        const { id } = req.params;
+        const user = req.user;
+    
+        if (user) {
+          const result = await bookingServices.updateBooking(
+            user,
+            id as string,
+            req.body,
+          );
+          res.status(200).json({
+            success: true,
+            message: "booking updated successfully",
+            data: result,
+          });
+        }
+    
+        res.status(200).json({
+          success: true,
+          message: "booking not found",
+          data: [],
+        });
+      } catch (err: any) {
+        res.status(500).json({
+          success: false,
+          message: "Unexpected server errors",
+          errors: "Internal Server Error",
+        });
+      }
+}
+
 export const bookingContollers = {
   createBooking,
   getBookings,
