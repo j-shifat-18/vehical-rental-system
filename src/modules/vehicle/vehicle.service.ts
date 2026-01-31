@@ -91,9 +91,17 @@ const updateVehicle = async (
   return result.rows[0];
 };
 
+
+const deleteVehicle = async(id : string)=>{
+    const result = await pool.query(`DELETE FROM VEHICLES WHERE ID = $1` , [id]);
+
+    return result;
+}
+
 export const vehicleServices = {
   getAllVehiles,
   createVehicle,
   getSigleVehicle,
-  updateVehicle
+  updateVehicle,
+  deleteVehicle
 };
