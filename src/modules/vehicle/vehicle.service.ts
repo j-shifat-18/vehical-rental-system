@@ -42,7 +42,6 @@ const updateVehicle = async (
   vehicleId: string,
   payload: Record<string, unknown>
 ) => {
-    console.log(payload);
   const allowedFields = [
     "vehicle_name",
     "type",
@@ -64,7 +63,6 @@ const updateVehicle = async (
     }
   }
 
-//   console.log(updates.join(", "));
 
   if (updates.length === 0) {
     throw new Error("No valid fields provided for update");
@@ -79,8 +77,6 @@ const updateVehicle = async (
     RETURNING *
   `;
 
-  console.log(query);
-  console.log(values)
 
   const result = await pool.query(query, values);
 

@@ -19,6 +19,36 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+
+    const {id} = req.params;
+
+    const result = await userServices.deleteUser(id as string);
+
+    if (result.rowCount === 0) {
+      res.status(404).json({
+        success: false,
+        message: "user not found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "user deleted successfully",
+        data: result.rows,
+      });
+    }
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: "Unexpected server errors",
+      errors: "Internal Server Error",
+    });
+  }
+};
+
 export const userControllers = {
     getAllUsers,
+    deleteUser
 };
