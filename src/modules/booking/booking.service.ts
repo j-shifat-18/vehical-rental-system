@@ -59,5 +59,5 @@ const getBookings = async (user: JwtPayload) => {
 
 export const bookingServices = {
   createBooking,
-  getBookings,
+  getBookings,  
 };
