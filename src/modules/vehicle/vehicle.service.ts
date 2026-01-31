@@ -2,18 +2,15 @@ import { pool } from "../../config/db";
 
 const getAllVehiles = async () => {
   const result = await pool.query(`SELECT * FROM VEHICLES`);
-
   return result.rows;
 };
 
 const getSigleVehicle = async(id : string)=>{
     const result = await pool.query(`SELECT * FROM VEHICLES WHERE ID = $1` , [id]);
-
     return result.rows;
 }
 
 const createVehicle = async (payload: Record<string, unknown>) => {
-
   const {
     vehicle_name,
     type,
@@ -21,7 +18,6 @@ const createVehicle = async (payload: Record<string, unknown>) => {
     daily_rent_price,
     availability_status,
   } = payload;
-
 
   const result = await pool.query(
     `INSERT INTO VEHICLES (VEHICLE_NAME , TYPE , REGISTRATION_NUMBER , DAILY_RENT_PRICE , AVAILABILITY_STATUS) VALUES ($1 , $2 , $3 , $4 , $5) RETURNING *`,
@@ -34,8 +30,7 @@ const createVehicle = async (payload: Record<string, unknown>) => {
     ]
   );
 
-
-  return result;
+  return result.rows[0];
 };
 
 const updateVehicle = async (
@@ -52,7 +47,6 @@ const updateVehicle = async (
 
   const updates: string[] = [];
   const values: any[] = [];
-
   let index = 1;
 
   for (const field of allowedFields) {
@@ -62,7 +56,6 @@ const updateVehicle = async (
       index++;
     }
   }
-
 
   if (updates.length === 0) {
     throw new Error("No valid fields provided for update");
@@ -77,7 +70,6 @@ const updateVehicle = async (
     RETURNING *
   `;
 
-
   const result = await pool.query(query, values);
 
   if (result.rowCount === 0) {
@@ -87,10 +79,16 @@ const updateVehicle = async (
   return result.rows[0];
 };
 
+const checkActiveBookings = async (vehicleId: string) => {
+  const result = await pool.query(
+    `SELECT COUNT(*) FROM BOOKINGS WHERE VEHICLE_ID = $1 AND STATUS = 'active'`,
+    [vehicleId]
+  );
+  return parseInt(result.rows[0].count);
+};
 
 const deleteVehicle = async(id : string)=>{
     const result = await pool.query(`DELETE FROM VEHICLES WHERE ID = $1` , [id]);
-
     return result;
 }
 
@@ -99,5 +97,6 @@ export const vehicleServices = {
   createVehicle,
   getSigleVehicle,
   updateVehicle,
-  deleteVehicle
+  deleteVehicle,
+  checkActiveBookings
 };

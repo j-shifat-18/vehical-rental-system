@@ -7,21 +7,32 @@ const auth = (...roles: string[]) => {
     try {
       const header = req.headers.authorization;
 
-     
-
       if (!header) {
-        return res.status(401).json({ message: "Unauthorized access" });
+        return res.status(401).json({ 
+          success: false,
+          message: "Unauthorized access",
+          errors: "Missing authorization header"
+        });
       }
 
       const bearer = header.split(" ")[0] as string;
 
       if(!bearer || bearer !== "Bearer"){
-        return res.status(401).json({ message: "Unauthorized access" });
+        return res.status(401).json({ 
+          success: false,
+          message: "Unauthorized access",
+          errors: "Invalid authorization format"
+        });
       }
+      
       const token = header.split(" ")[1] as string;
 
       if (!token) {
-        return res.status(401).json({ message: "Unauthorized access" });
+        return res.status(401).json({ 
+          success: false,
+          message: "Unauthorized access",
+          errors: "Missing token"
+        });
       }
 
       const decoded = jwt.verify(
@@ -31,20 +42,36 @@ const auth = (...roles: string[]) => {
 
       req.user = decoded;
 
-
-      //   console.log(decoded);
-
       if (roles.length && !roles.includes(decoded.role as string)) {
-        return res.status(401).json({
-          error: "unauthorized!!!",
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden",
+          errors: "Insufficient permissions"
         });
       }
 
       next();
     } catch (err: any) {
+      if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized access",
+          errors: "Invalid token"
+        });
+      }
+      
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized access",
+          errors: "Token expired"
+        });
+      }
+
       res.status(500).json({
         success: false,
-        message: err.message,
+        message: "Unexpected server errors",
+        errors: "Internal Server Error"
       });
     }
   };

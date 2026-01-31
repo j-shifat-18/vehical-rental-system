@@ -9,11 +9,11 @@ const signup = async (payload: Record<string, unknown>) => {
   const hashedPassword = await bcrypt.hash(password as string, 10);
 
   const result = await pool.query(
-    `INSERT INTO USERS (NAME , EMAIL , PASSWORD , PHONE, ROLE) VALUES ($1 , $2 , $3 , $4 , $5) RETURNING *`,
+    `INSERT INTO USERS (NAME , EMAIL , PASSWORD , PHONE, ROLE) VALUES ($1 , $2 , $3 , $4 , $5) RETURNING ID, NAME, EMAIL, PHONE, ROLE`,
     [name, email, hashedPassword, phone, role],
   );
 
-  return result;
+  return result.rows[0];
 };
 
 const signin = async (payload: Record<string, unknown>) => {
@@ -43,8 +43,13 @@ const signin = async (payload: Record<string, unknown>) => {
     },
   );
 
+  // Return user data without password
+  const { password: _, ...userWithoutPassword } = user;
 
-  return {token , result};
+  return {
+    token,
+    user: userWithoutPassword
+  };
 };
 
 export const authServices = {

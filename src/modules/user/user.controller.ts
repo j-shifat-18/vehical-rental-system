@@ -3,11 +3,11 @@ import { userServices } from "./user.service";
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const result = await userServices.getAllUsers(req.body);
+    const result = await userServices.getAllUsers();
 
     res.status(200).json({
       success: true,
-      message: "Data collected successfully",
+      message: "Users retrieved successfully",
       data: result,
     });
   } catch (err: any) {
@@ -21,22 +21,32 @@ const getAllUsers = async (req: Request, res: Response) => {
 
 const deleteUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
 
-    const result = await userServices.deleteUser(id as string);
-
-    if (result.rowCount === 0) {
-      res.status(404).json({
+    // Check if user has active bookings
+    const activeBookings = await userServices.checkActiveBookings(userId as string);
+    if (activeBookings > 0) {
+      return res.status(400).json({
         success: false,
-        message: "user not found",
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "user deleted successfully",
-        data: result.rows,
+        message: "Cannot delete user with active bookings",
+        errors: "User has active bookings"
       });
     }
+
+    const result = await userServices.deleteUser(userId as string);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        errors: "User does not exist"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully"
+    });
   } catch (err: any) {
     res.status(500).json({
       success: false,
@@ -48,28 +58,41 @@ const deleteUser = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
     const user = req.user;
 
-    if (user) {
-      const result = await userServices.updateUser(
-        user,
-        id as string,
-        req.body,
-      );
-      res.status(200).json({
-        success: true,
-        message: "user updated successfully",
-        data: result,
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access",
+        errors: "No user found in token"
       });
     }
 
+    const result = await userServices.updateUser(user, userId as string, req.body);
+    
     res.status(200).json({
       success: true,
-      message: "user not found",
-      data: [],
+      message: "User updated successfully",
+      data: result,
     });
   } catch (err: any) {
+    if (err.message === "User not found") {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        errors: "User does not exist"
+      });
+    }
+    
+    if (err.message === "Unauthorized to update this user") {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden",
+        errors: "Cannot update other user's profile"
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: "Unexpected server errors",
