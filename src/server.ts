@@ -39,6 +39,21 @@ app.get('/api/v1', (req : Request, res : Response) => {
   res.send('Vehical rental system running')
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+const server = app.listen(3001, () => {
+  console.log("Example app listening on port 3001");
+});
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM received. Closing server...");
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
+process.on("SIGINT", () => {
+  console.log("SIGINT received. Closing server...");
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
