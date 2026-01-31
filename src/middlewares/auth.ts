@@ -14,7 +14,7 @@ const auth = (...roles: string[]) => {
       }
 
       const bearer = header.split(" ")[0] as string;
-      
+
       if(!bearer || bearer !== "Bearer"){
         return res.status(401).json({ message: "Unauthorized access" });
       }
@@ -28,6 +28,9 @@ const auth = (...roles: string[]) => {
         token,
         config.jwtSecret as string,
       ) as JwtPayload;
+
+      req.user = decoded;
+
 
       //   console.log(decoded);
 
