@@ -105,6 +105,73 @@ npm start
 
 The server will start on `http://localhost:3001`
 
+---
+
+## 🐳 Docker & Docker Compose Setup
+
+This project is fully containerized with a lightweight multi-stage Dockerfile and Docker Compose orchestration supporting both production and hot-reloading development modes.
+
+### 1. Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/) installed and running.
+
+### 2. Quick Start with Docker Compose (Production)
+Run both the application and an isolated PostgreSQL database container with persistent storage:
+
+```bash
+# 1. (Optional) Copy example env configuration
+cp .env.example .env
+
+# 2. Build and start containers in the background
+docker compose up -d --build
+```
+
+- **API URL:** `http://localhost:3001/api/v1`
+- **PostgreSQL (host access):** `localhost:5433` (mapped from 5432 to prevent conflicts with any local Postgres)
+
+To view logs:
+```bash
+docker compose logs -f app
+```
+
+To stop containers:
+```bash
+docker compose down
+```
+
+To stop containers and wipe persistent database volume:
+```bash
+docker compose down -v
+```
+
+---
+
+### 3. Development Mode with Live Reload
+For local development with instant hot-reloading (`tsx watch`):
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+Any changes made to `./src` on your host machine will immediately reload inside the container without rebuilding the image!
+
+---
+
+### 4. Standalone Docker Image
+You can also build and run just the application container (e.g. connecting to a remote Neon database):
+
+```bash
+# Build image
+docker build -t vehicle-rental-system:latest .
+
+# Run container with environment variables
+docker run -d \
+  -p 3001:3001 \
+  -e CONNECTION_STRING="your-database-connection-string" \
+  -e JWT_SECRET="your-jwt-secret" \
+  --name vehicle_rental_app \
+  vehicle-rental-system:latest
+```
+
+
 ## 📖 API Usage
 
 ### Base URL

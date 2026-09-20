@@ -39,8 +39,8 @@ app.get('/api/v1', (req : Request, res : Response) => {
   res.send('Vehical rental system running')
 })
 
-const server = app.listen(3001, () => {
-  console.log("Example app listening on port 3001");
+const server = app.listen( port || 3001, () => {
+  console.log(`Example app listening on port ${port || 3001}`);
 });
 
 process.on("SIGTERM", () => {
