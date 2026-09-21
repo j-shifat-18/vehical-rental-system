@@ -33,10 +33,10 @@ app.use("/api/v1/vehicles" ,vehicleRoutes)
 app.use("/api/v1/bookings" , bookingRoutes);
 
 app.get('/', (req : Request, res : Response) => {
-  res.send('Vehical rental system')
+  res.send('Vehicle rental system')
 })
 app.get('/api/v1', (req : Request, res : Response) => {
-  res.send('Vehical rental system running')
+  res.send('Vehicle rental system running')
 })
 
 const server = app.listen( port || 3001, () => {
