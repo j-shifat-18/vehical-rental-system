@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copy package manifests
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Stage 2: Build the Next.js application
 FROM node:20-alpine AS builder
