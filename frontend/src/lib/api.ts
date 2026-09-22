@@ -1,7 +1,15 @@
 import { ApiResponse, AuthResponse, Booking, User, Vehicle } from "./types";
 
-const PRIMARY_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
+function getPrimaryApiUrl(): string {
+  if (typeof window !== "undefined") {
+    // If accessing via Nginx (port 80 or standard HTTP port), route directly through Nginx
+    if (window.location.port === "" || window.location.port === "80") {
+      return "/api/v1";
+    }
+  }
+  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
+}
+
 const FALLBACK_API_URL =
   process.env.NEXT_PUBLIC_FALLBACK_API_URL ||
   "https://vehical-rental-system-five.vercel.app/api/v1";
@@ -16,6 +24,7 @@ async function request<T>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   const token = getToken();
+  const primaryApiUrl = getPrimaryApiUrl();
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -30,7 +39,7 @@ async function request<T>(
 
   // Try primary URL first
   try {
-    const res = await fetch(`${PRIMARY_API_URL}${cleanEndpoint}`, {
+    const res = await fetch(`${primaryApiUrl}${cleanEndpoint}`, {
       ...options,
       headers,
     });
@@ -40,7 +49,7 @@ async function request<T>(
   } catch (primaryErr) {
     // If local is down or unreachable, gracefully try fallback API
     console.warn(
-      `Primary API (${PRIMARY_API_URL}) failed, trying fallback API...`,
+      `Primary API (${primaryApiUrl}) failed, trying fallback API...`,
       primaryErr
     );
 
