@@ -5,9 +5,9 @@ import path from "path";
 dotenv.config({path : path.join(process.cwd() , ".env")});
 
 const config = {
-    connection_str: process.env.CONNECTION_STRING,
-    port: process.env.PORT,
-    jwtSecret : process.env.JWT_SECRET
+    connection_str: process.env.CONNECTION_STRING ,
+    port: process.env.PORT || 3001,
+    jwtSecret : process.env.JWT_SECRET || "dev-fallback-secret-key" , 
 
 }
 

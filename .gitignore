@@ -1,7 +1,9 @@
 node_modules
 .env*
 !.env.example
-
 jwt_secret.js
 dist
 .vercel
+.next
+.DS_Store
+*.log

@@ -105,71 +105,66 @@ npm start
 
 The server will start on `http://localhost:3001`
 
+
 ---
 
 ## 🐳 Docker & Docker Compose Setup
 
-This project is fully containerized with a lightweight multi-stage Dockerfile and Docker Compose orchestration supporting both production and hot-reloading development modes.
+The entire full-stack application (Next.js Frontend, Node/Express Backend, and PostgreSQL Database) is fully containerized with lightweight multi-stage Dockerfiles and top-level Docker Compose orchestration.
 
 ### 1. Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/) installed and running.
 
-### 2. Quick Start with Docker Compose (Production)
-Run both the application and an isolated PostgreSQL database container with persistent storage:
+### 2. Run Full Application (Production Mode)
+Run the entire stack (PostgreSQL database, Express backend, and Next.js frontend) with a single command:
 
 ```bash
-# 1. (Optional) Copy example env configuration
+# 1. (Optional) Copy example environment configuration
 cp .env.example .env
 
-# 2. Build and start containers in the background
+# 2. Build and start all three containers in the background
 docker compose up -d --build
 ```
 
-- **API URL:** `http://localhost:3001/api/v1`
-- **PostgreSQL (host access):** `localhost:5433` (mapped from 5432 to prevent conflicts with any local Postgres)
+#### Services & Access Ports:
+- **Frontend App (Next.js):** [http://localhost:3000](http://localhost:3000)
+- **Backend API (Express):** [http://localhost:3001/api/v1](http://localhost:3001/api/v1)
+- **PostgreSQL Database:** `localhost:5433` (mapped from container 5432 to avoid host conflicts)
 
-To view logs:
+#### Manage Containers:
 ```bash
-docker compose logs -f app
-```
+# View live logs from all services
+docker compose logs -f
 
-To stop containers:
-```bash
+# View logs from a specific service (frontend, backend, or postgres)
+docker compose logs -f frontend
+docker compose logs -f backend
+
+# Stop all containers
 docker compose down
-```
 
-To stop containers and wipe persistent database volume:
-```bash
+# Stop all containers and wipe persistent database volume
 docker compose down -v
 ```
 
 ---
 
-### 3. Development Mode with Live Reload
-For local development with instant hot-reloading (`tsx watch`):
+### 3. Development Mode with Live Hot Reload
+For local containerized development with instant hot-reloading:
 
 ```bash
 docker compose -f docker-compose.dev.yml up --build
 ```
-Any changes made to `./src` on your host machine will immediately reload inside the container without rebuilding the image!
+Any changes made to `./backend/src` on your host machine will immediately reload inside the backend container!
 
 ---
 
-### 4. Standalone Docker Image
-You can also build and run just the application container (e.g. connecting to a remote Neon database):
-
-```bash
-# Build image
-docker build -t vehicle-rental-system:latest .
-
-# Run container with environment variables
-docker run -d \
-  -p 3001:3001 \
-  -e CONNECTION_STRING="your-database-connection-string" \
-  -e JWT_SECRET="your-jwt-secret" \
-  --name vehicle_rental_app \
-  vehicle-rental-system:latest
-```
+### 4. npm Shortcut Scripts
+From the repository root, you can also use standard npm scripts:
+- `npm run docker:up` — Start all containers with build
+- `npm run docker:down` — Stop all containers
+- `npm run docker:logs` — Stream container logs
+- `npm run docker:dev` — Start development mode with hot-reloading
 
 
 ## 📖 API Usage

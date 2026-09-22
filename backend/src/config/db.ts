@@ -1,9 +1,15 @@
 import { Pool } from "pg";
 import config from ".";
 
+if (!config.connection_str) {
+  throw new Error(
+    "Missing CONNECTION_STRING environment variable! Please provide CONNECTION_STRING in your .env or container environment."
+  );
+}
+
 //DB
 export const pool = new Pool({
-  connectionString: `${config.connection_str}`,
+  connectionString: config.connection_str,
 });
 
 const initDB = async () => {
